@@ -2,7 +2,13 @@ import numpy as np
 from scipy.sparse import coo_matrix
 
 def vsolve(x,b):
-    # This function solves the Vandermonde linear system W(x)f = b;
+    """ This function solves the Vandermonde linear system W(x)f = b. It is a
+    service function needed to compute the ρ and σ polynomials.
+
+    :param x: vector of the variables generating the Vandermonde system
+    :param b: right-hand side of the system
+    :return f: solution of the linear system
+    """
     f = b
     n = x.size - 1
     for k in np.arange(0,n):
@@ -16,11 +22,13 @@ def vsolve(x,b):
     return f
 
 def rosi_gbdf(k,j):
-    # Builds the ρ and σ polynomials for a generalized BDF formula with:
-    # k steps
-    # j initial conditions
-    # Remark: If J=K we get an Initial Value Method
-    #         If J=fix(k/2)+1 we get A-Stable GBDF
+    """ Builds the ρ and σ polynomials for a generalized BDF formula with
+
+    :param k: steps
+    :param j: initial conditions
+    :return ro: ρ polynomial
+    :return si: σ polynomial
+    """
     b = np.zeros((k+1,1),dtype=float)
     b[1] = 1
     ro = vsolve(np.linspace(-j,k-j,num=k+1),b)
@@ -30,8 +38,16 @@ def rosi_gbdf(k,j):
 
 
 def mab(type,k,n):
-    # This function creates the A and B matrices
-    # for the construction of the BVM scheme.
+    """ This function creates the A and B matrices for the construction of the
+    BVM scheme.
+
+    :param type: BVM formula "TOM", "GBDF", "GAM"
+    :param k: Degree of the formula
+    :param n: Number of time steps
+
+    """
+    #
+    #
     if type.upper() == "TOM":
         print("Building TOM matrices")
     elif type.upper() == "GBDF":
@@ -77,7 +93,6 @@ def mab(type,k,n):
                 a_irow[row] = i
                 a_icol[row] = n+j
                 a_ival[row] = ro[col]
-                print("3] a("+str(a_irow[row])+","+str(a_icol[row])+")="+str(a_ival[row]))
                 b_irow[row] = i
                 b_icol[row] = n+j
                 b_ival[row] = si[col]
@@ -91,3 +106,15 @@ def mab(type,k,n):
         raise NameError('Unknown formula')
 
     return A,B
+
+def buildlinop(type,k,n,J):
+    """ This function build the linear operator
+    :math:`M= A \otimes I - h\, B \otimes J.`
+
+    :param type: BVM formula "TOM", "GBDF", "GAM"
+    :param k: Degree of the formula
+    :param n: Number of time steps
+    :param J: Jacobian of the system to integrate
+    """
+
+    [A,B] = mab(type,k,n)
