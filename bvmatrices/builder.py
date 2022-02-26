@@ -1,25 +1,8 @@
 import numpy as np
-from scipy.sparse import coo_matrix
-
-def vsolve(x,b):
-    """ This function solves the Vandermonde linear system W(x)f = b. It is a
-    service function needed to compute the ρ and σ polynomials.
-
-    :param x: vector of the variables generating the Vandermonde system
-    :param b: right-hand side of the system
-    :return f: solution of the linear system
-    """
-    f = b
-    n = x.size - 1
-    for k in np.arange(0,n):
-        for i in np.arange(n,k,-1):
-            f[i] = f[i] - x[k]*f[i-1]
-    for k in np.arange(n-1,-1,-1):
-        for i in np.arange(k+1,n+1):
-            f[i] = f[i]/(x[i]-x[i-k-1])
-        for i in np.arange(k,n):
-            f[i] = f[i] - f[i+1]
-    return f
+from scipy.sparse import coo_matrix, eye
+from scipy.sparse.linalg import LinearOperator
+from utilities import dropcols_coo, vsolve
+import time
 
 def rosi_gbdf(k,j):
     """ Builds the ρ and σ polynomials for a generalized BDF formula with
@@ -51,7 +34,6 @@ def mab(type,k,n):
     if type.upper() == "TOM":
         print("Building TOM matrices")
     elif type.upper() == "GBDF":
-        print("Building GBDF matrices")
         nu = int(np.fix((k+2)/2))
         a_irow = np.zeros(shape=(k+1)*n,dtype=int)
         a_icol = np.zeros(shape=(k+1)*n,dtype=int)
@@ -107,14 +89,40 @@ def mab(type,k,n):
 
     return A,B
 
-def buildlinop(type,k,n,J):
+def buildlinop(type,k,n,J,T,t0,E=None):
     """ This function build the linear operator
-    :math:`M= A \otimes I - h\, B \otimes J.`
+    :math:`M= A \otimes E - h\, B \otimes J.`
 
     :param type: BVM formula "TOM", "GBDF", "GAM"
     :param k: Degree of the formula
     :param n: Number of time steps
     :param J: Jacobian of the system to integrate
+    :param T: Final time of integration
+    :param t0: Initial integration
+    :param E: Mass matrix, default value is the identity matrix
+    :type E: optional
     """
 
+    tic = time.perf_counter()
     [A,B] = mab(type,k,n)
+    A = dropcols_coo(A,0)
+    B = dropcols_coo(B,0)
+
+    s = A.shape[0] # Number of time step
+    m = J.shape[0] # Size of the Jacobian
+    if E is None:
+        E = eye(m,format="csr",dtype=float)
+    h = (T-t0)/s   # Integration step
+
+    def mv(v):
+        # Matrix-Vector function
+        v = v.reshape((m,s),order='F')
+        y = E*v*A.transpose() - h*J*v*B.transpose()
+        y = y.reshape(m*s, order='F')
+        return y
+
+    M = LinearOperator((m*s,m*s),matvec=mv,dtype=float)
+    toc = time.perf_counter()
+    print("Linear operator building time: "+"{:e}".format(toc-tic))
+
+    return M

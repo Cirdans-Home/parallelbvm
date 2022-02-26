@@ -44,10 +44,26 @@ Library
 =======
 
 To assemble the linear system the key routine is represented by the method
-:meth:`bvmatrices.builder.mab`.
+:meth:`bvmatrices.builder.mab` that builds the :math:`A` and :math:`B` matrices
+for the different BVM formulas. Then the function :meth:`bvmatrices.builder.buildlinop`
+produces the linear operator :math:`M` to be used inside a Krylov method.
 
-.. automodule:: bvmatrices.builder
+.. automodule:: builder
    :members:
+
+Utilities
+---------
+
+Some auxiliary routines are contained in the utilities module.
+
+.. automodule:: utilities
+   :members:
+
+
+
+
+
+
 
 .. toctree::
    :maxdepth: 2

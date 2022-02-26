@@ -57,12 +57,14 @@
 <div class="section" id="library">
 <h1>Library<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h1>
 <p>To assemble the linear system the key routine is represented by the method
-<a class="reference internal" href="#bvmatrices.builder.mab" title="bvmatrices.builder.mab"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bvmatrices.builder.mab()</span></code></a>.</p>
-<span class="target" id="module-bvmatrices.builder"></span><dl class="py function">
-<dt id="bvmatrices.builder.buildlinop">
-<code class="sig-prename descclassname"><span class="pre">bvmatrices.builder.</span></code><code class="sig-name descname"><span class="pre">buildlinop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bvmatrices.builder.buildlinop" title="Permalink to this definition">¶</a></dt>
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">bvmatrices.builder.mab()</span></code> that builds the <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> matrices
+for the different BVM formulas. Then the function <code class="xref py py-meth docutils literal notranslate"><span class="pre">bvmatrices.builder.buildlinop()</span></code>
+produces the linear operator <span class="math notranslate nohighlight">\(M\)</span> to be used inside a Krylov method.</p>
+<span class="target" id="module-builder"></span><dl class="py function">
+<dt id="builder.buildlinop">
+<code class="sig-prename descclassname"><span class="pre">builder.</span></code><code class="sig-name descname"><span class="pre">buildlinop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.buildlinop" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function build the linear operator
-<span class="math notranslate nohighlight">\(M= A \otimes I - h\, B \otimes J.\)</span></p>
+<span class="math notranslate nohighlight">\(M= A \otimes E - h\, B \otimes J.\)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -70,14 +72,17 @@
 <li><p><strong>k</strong> – Degree of the formula</p></li>
 <li><p><strong>n</strong> – Number of time steps</p></li>
 <li><p><strong>J</strong> – Jacobian of the system to integrate</p></li>
+<li><p><strong>T</strong> – Final time of integration</p></li>
+<li><p><strong>t0</strong> – Initial integration</p></li>
+<li><p><strong>E</strong> (<em>optional</em>) – Mass matrix, default value is the identity matrix</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bvmatrices.builder.mab">
-<code class="sig-prename descclassname"><span class="pre">bvmatrices.builder.</span></code><code class="sig-name descname"><span class="pre">mab</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bvmatrices.builder.mab" title="Permalink to this definition">¶</a></dt>
+<dt id="builder.mab">
+<code class="sig-prename descclassname"><span class="pre">builder.</span></code><code class="sig-name descname"><span class="pre">mab</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.mab" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function creates the A and B matrices for the construction of the
 BVM scheme.</p>
 <dl class="field-list simple">
@@ -92,8 +97,8 @@ BVM scheme.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bvmatrices.builder.rosi_gbdf">
-<code class="sig-prename descclassname"><span class="pre">bvmatrices.builder.</span></code><code class="sig-name descname"><span class="pre">rosi_gbdf</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bvmatrices.builder.rosi_gbdf" title="Permalink to this definition">¶</a></dt>
+<dt id="builder.rosi_gbdf">
+<code class="sig-prename descclassname"><span class="pre">builder.</span></code><code class="sig-name descname"><span class="pre">rosi_gbdf</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.rosi_gbdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds the ρ and σ polynomials for a generalized BDF formula with</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -111,11 +116,32 @@ BVM scheme.</p>
 </dl>
 </dd></dl>
 
+<div class="section" id="utilities">
+<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
+<p>Some auxiliary routines are contained in the utilities module.</p>
+<span class="target" id="module-utilities"></span><dl class="py function">
+<dt id="utilities.dropcols_coo">
+<code class="sig-prename descclassname"><span class="pre">utilities.</span></code><code class="sig-name descname"><span class="pre">dropcols_coo</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx_to_drop</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.dropcols_coo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drops columns from matrices stored in COO format. Result is returned in
+CSR format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>C</strong> – Matrix in COO format.</p></li>
+<li><p><strong>idx_to_drop</strong> – List of columns to be dropped.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return C</dt>
+<dd class="field-even"><p>Matrix in CSR format with dropped columns.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
-<dt id="bvmatrices.builder.vsolve">
-<code class="sig-prename descclassname"><span class="pre">bvmatrices.builder.</span></code><code class="sig-name descname"><span class="pre">vsolve</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bvmatrices.builder.vsolve" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function solves the Vandermonde linear system W(x)f = b. It is a
-service function needed to compute the ρ and σ polynomials.</p>
+<dt id="utilities.vsolve">
+<code class="sig-prename descclassname"><span class="pre">utilities.</span></code><code class="sig-name descname"><span class="pre">vsolve</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.vsolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function solves the Vandermonde linear system <span class="math notranslate nohighlight">\(W(x)f = b\)</span>.
+It is a service function needed to compute the ρ and σ polynomials.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -130,6 +156,7 @@ service function needed to compute the ρ and σ polynomials.</p>
 </dd></dl>
 
 <div class="toctree-wrapper compound">
+</div>
 </div>
 </div>
 <div class="section" id="bibliography">
