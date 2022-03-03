@@ -60,31 +60,62 @@
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">bvmatrices.builder.mab()</span></code> that builds the <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> matrices
 for the different BVM formulas. Then the function <code class="xref py py-meth docutils literal notranslate"><span class="pre">bvmatrices.builder.buildlinop()</span></code>
 produces the linear operator <span class="math notranslate nohighlight">\(M\)</span> to be used inside a Krylov method.</p>
-<span class="target" id="module-builder"></span><dl class="py function">
-<dt id="builder.buildlinop">
-<code class="sig-prename descclassname"><span class="pre">builder.</span></code><code class="sig-name descname"><span class="pre">buildlinop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.buildlinop" title="Permalink to this definition">¶</a></dt>
+<span class="target" id="module-builder"></span><dl class="py class">
+<dt id="builder.bvmethod">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">builder.</span></code><code class="sig-name descname"><span class="pre">bvmethod</span></code><a class="headerlink" href="#builder.bvmethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class containing all the information for a given BVM</p>
+<dl class="py method">
+<dt id="builder.bvmethod.buildlinop">
+<code class="sig-name descname"><span class="pre">buildlinop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.buildlinop" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function build the linear operator
 <span class="math notranslate nohighlight">\(M= A \otimes E - h\, B \otimes J.\)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>type</strong> – BVM formula “TOM”, “GBDF”, “GAM”</p></li>
-<li><p><strong>k</strong> – Degree of the formula</p></li>
-<li><p><strong>n</strong> – Number of time steps</p></li>
 <li><p><strong>J</strong> – Jacobian of the system to integrate</p></li>
 <li><p><strong>T</strong> – Final time of integration</p></li>
 <li><p><strong>t0</strong> – Initial integration</p></li>
 <li><p><strong>E</strong> (<em>optional</em>) – Mass matrix, default value is the identity matrix</p></li>
 </ul>
 </dd>
+<dt class="field-even">Return M</dt>
+<dd class="field-even"><p>LinearOperator implementing the matrix-vector product</p>
+</dd>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt id="builder.mab">
-<code class="sig-prename descclassname"><span class="pre">builder.</span></code><code class="sig-name descname"><span class="pre">mab</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.mab" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function creates the A and B matrices for the construction of the
-BVM scheme.</p>
+<dl class="py method">
+<dt id="builder.bvmethod.buildprecond">
+<code class="sig-name descname"><span class="pre">buildprecond</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ptype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.buildprecond" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function build the linear operator
+<span class="math notranslate nohighlight">\(P= \operatorname{approx}(A) \otimes E - h\, \operatorname{approx}(B) \otimes J.\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>J</strong> – Jacobian of the system to integrate</p></li>
+<li><p><strong>T</strong> – Final time of integration</p></li>
+<li><p><strong>t0</strong> – Initial integration</p></li>
+<li><p><strong>ptype</strong> – Type of structured preconditioner to build</p></li>
+<li><p><strong>E</strong> (<em>optional</em>) – Mass matrix, default value is the identity matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return P</dt>
+<dd class="field-even"><p>LinearOperator implementing the preconditioner</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="builder.bvmethod.info">
+<code class="sig-name descname"><span class="pre">info</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function prints out the information about the method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="builder.bvmethod.mab">
+<code class="sig-name descname"><span class="pre">mab</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.mab" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function creates the A and B matrices for the construction of
+the BVM.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -94,6 +125,8 @@ BVM scheme.</p>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
