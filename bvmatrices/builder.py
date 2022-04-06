@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.sparse import coo_matrix, eye
 from scipy.sparse.linalg import LinearOperator, spsolve
+from scipy.io import savemat
 from utilities import dropcols_coo, vsolve
 import time
 
@@ -15,6 +16,11 @@ class bvmethod:
     si = None
     formula = None
     ptype = None
+
+    def savetomatlab(self):
+        """ Save the building blocks of the method in MATLAB format """
+        savemat(self.formula+".mat",{'A':self.A,'B':self.B,'n':self.n,
+            'k':self.k,'ro':self.ro,'si':self.si},oned_as="column")
 
     def info(self):
         """ This function prints out the information about the method """
@@ -99,28 +105,56 @@ class bvmethod:
         self.k = k
         self.nu = nu
 
-    def buildlinop(self,J,T,t0,E=None):
+    def buildlinop(self,J,T,t0,g,u0,E=None):
         """ This function build the linear operator
-        :math:`M= A \otimes E - h\, B \otimes J.`
+        :math:`M= A \otimes E - h\, B \otimes J.` and the right-hand side for
+        the liner system.
 
         :param J: Jacobian of the system to integrate
         :param T: Final time of integration
         :param t0: Initial integration
+        :param g: Right-Hand side, could be either a vector or a function
+        :param u0: Initial condition
         :param E: Mass matrix, default value is the identity matrix
         :type E: optional
         :return M: LinearOperator implementing the matrix-vector product
 
         """
 
+        # First we build the rhs for which we need the A and B matrices with
+        # of the whole size
+        tic = time.perf_counter()
+        m = J.shape[0] # Size of the Jacobian
+        s = self.A.shape[0] # Number of time step
+        h = (T-t0)/s   # Integration step
+        if E is None:
+            E = eye(m,format="csr",dtype=float)
+
+        G = np.zeros((m,s+1))
+        u0mat = np.zeros((m,s+1))
+        u0mat[0:m,0] = u0[0:m]
+        u0mat = E*u0mat*self.A.transpose() - h*J*u0mat*self.B.transpose()
+        # rhs[0:m] = -u0mat[:,1]
+        # rhs[m+1:2*m+1] = -u0mat[:,2]
+        if callable(g):
+            for i in np.arange(1,s+1):
+                G[:,i] = g(t0 + i*h)
+        else:
+            for i in np.arange(1,s+1):
+                G[:,i] = g[0:m]
+        G[:,1::] = (h*G*self.B.transpose())
+        G[:,0] = u0[0:m]
+        G[:,1:self.k] = G[:,1:self.k] - u0mat[:,0:self.k-1]
+
+        print(G.shape)
+
+        G = G.reshape( m*(s+1),order='F')
+        toc = time.perf_counter()
+        print(" RHS building time: "+"{:e}".format(toc-tic))
+
         tic = time.perf_counter()
         A = dropcols_coo(self.A,0)
         B = dropcols_coo(self.B,0)
-
-        s = A.shape[0] # Number of time step
-        m = J.shape[0] # Size of the Jacobian
-        if E is None:
-            E = eye(m,format="csr",dtype=float)
-        h = (T-t0)/s   # Integration step
 
         def mv(v):
             """ Implementation of the matrix-vector product without building the
@@ -131,11 +165,45 @@ class bvmethod:
             y = y.reshape(m*s, order='F')
             return y
 
+        savemat("matprod.mat",{"A": A, "B": B, "E": E, "J": J, "G":G})
+
         M = LinearOperator((m*s,m*s),matvec=mv,dtype=float)
         toc = time.perf_counter()
         print(" Linear operator building time: "+"{:e}".format(toc-tic))
 
-        return M
+        return M,G[m::]
+
+    def buildrhs(self,u0,g,T,t0):
+        """ This function bulds the right-hand side for the all-at-once system
+        with the given BVM formula.
+
+        :param u0: Initial condition
+        :param g: source vector, it can be both a function of t or a constant
+            vector
+        :param T: Final time of integration
+        :param t0: Initial integration
+        :return rhs:
+        """
+
+        s = self.A.shape[0] # Number of time step
+        m = u0.shape[0]     # Size of the Jacobian
+        rhs = np.zeros(m*s)
+        rhs[0:m] = u0[0:m]
+        G = np.zeros((m,s))
+        h = (T - t0)/s
+
+        if callable(g):
+            for i in np.arange(s):
+                G[:,i] = g(t0 + i*h)
+        else:
+            for i in np.arange(s):
+                G[:,i] = g[0:m]
+
+        rhs = rhs + (h*G*self.B).reshape( m*s,order='F')
+
+        return rhs.transpose()
+
+
 
     def buildprecond(self,J,T,t0,ptype,E=None):
         """ This function build the linear operator
@@ -172,6 +240,7 @@ class bvmethod:
             t[np.arange(0,self.nu+1,1)] = self.ro[np.arange(self.nu,-1,-1)]
             t[np.arange(s-self.k+self.nu,self.n,1)] = self.ro[np.arange(self.nu+1,self.k+1,1)]
             phi = np.fft.fft(t,axis=0)
+            phi[0] = 1
             # Compute the ψ values
             t[np.arange(0,self.nu+1,1)] =  self.si[np.arange(self.nu,-1,-1)]
             t[np.arange(s-self.k+self.nu,self.n,1)] = self.si[np.arange(self.nu+1,self.k+1,1)]
@@ -189,7 +258,7 @@ class bvmethod:
             for i in np.arange(s):
                 T = E.multiply(phi[i]) + J.multiply(- h*psi[i])
                 w[:,i] = spsolve(T,v[:,i])
-            v = np.fft.ifft(v)
+            v = np.fft.ifft(w.transpose()).transpose()
             y = v.reshape(m*s, order='F')
             return y.real
 
