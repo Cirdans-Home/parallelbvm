@@ -66,15 +66,18 @@ produces the linear operator <span class="math notranslate nohighlight">\(M\)</s
 <dd><p>A class containing all the information for a given BVM</p>
 <dl class="py method">
 <dt id="builder.bvmethod.buildlinop">
-<code class="sig-name descname"><span class="pre">buildlinop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.buildlinop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">buildlinop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.buildlinop" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function build the linear operator
-<span class="math notranslate nohighlight">\(M= A \otimes E - h\, B \otimes J.\)</span></p>
+<span class="math notranslate nohighlight">\(M= A \otimes E - h\, B \otimes J.\)</span> and the right-hand side for
+the liner system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>J</strong> – Jacobian of the system to integrate</p></li>
 <li><p><strong>T</strong> – Final time of integration</p></li>
 <li><p><strong>t0</strong> – Initial integration</p></li>
+<li><p><strong>g</strong> – Right-Hand side, could be either a vector or a function</p></li>
+<li><p><strong>u0</strong> – Initial condition</p></li>
 <li><p><strong>E</strong> (<em>optional</em>) – Mass matrix, default value is the identity matrix</p></li>
 </ul>
 </dd>
@@ -106,6 +109,26 @@ produces the linear operator <span class="math notranslate nohighlight">\(M\)</s
 </dd></dl>
 
 <dl class="py method">
+<dt id="builder.bvmethod.buildrhs">
+<code class="sig-name descname"><span class="pre">buildrhs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.buildrhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function bulds the right-hand side for the all-at-once system
+with the given BVM formula.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u0</strong> – Initial condition</p></li>
+<li><p><strong>g</strong> – source vector, it can be both a function of t or a constant
+vector</p></li>
+<li><p><strong>T</strong> – Final time of integration</p></li>
+<li><p><strong>t0</strong> – Initial integration</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return rhs</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="builder.bvmethod.info">
 <code class="sig-name descname"><span class="pre">info</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.info" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function prints out the information about the method</p>
@@ -125,6 +148,12 @@ the BVM.</p>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="builder.bvmethod.savetomatlab">
+<code class="sig-name descname"><span class="pre">savetomatlab</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.savetomatlab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the building blocks of the method in MATLAB format</p>
 </dd></dl>
 
 </dd></dl>
@@ -207,22 +236,22 @@ number of papers:</p>
 <dd><p>D. Bertaccini. Reliable preconditioned iterative linear solvers for some numerical integrators. <em>Numer. Linear Algebra Appl.</em>, 8(2):111–125, 2001.</p>
 </dd>
 <dt class="label" id="id8"><span class="brackets">Ber02</span></dt>
-<dd><p>Daniele Bertaccini. The spectrum of circulant–like preconditioners for some general linear multistep formulas for linear boundary value problems. <em>SIAM J. Numer. Anal.</em>, 40(5):1798–1822, 2002.</p>
+<dd><p>D. Bertaccini. The spectrum of circulant–like preconditioners for some general linear multistep formulas for linear boundary value problems. <em>SIAM J. Numer. Anal.</em>, 40(5):1798–1822, 2002.</p>
 </dd>
 <dt class="label" id="id2"><span class="brackets">BD18</span></dt>
-<dd><p>Daniele Bertaccini and Fabio Durastante. Limited memory block preconditioners for fast solution of fractional partial differential equations. <em>J. Sci. Comput.</em>, 77(2):950–970, 2018. URL: <a class="reference external" href="https://doi.org/10.1007/s10915-018-0729-3">https://doi.org/10.1007/s10915-018-0729-3</a>, <a class="reference external" href="https://doi.org/10.1007/s10915-018-0729-3">doi:10.1007/s10915-018-0729-3</a>.</p>
+<dd><p>D. Bertaccini and F. Durastante. Limited memory block preconditioners for fast solution of fractional partial differential equations. <em>J. Sci. Comput.</em>, 77(2):950–970, 2018. URL: <a class="reference external" href="https://doi.org/10.1007/s10915-018-0729-3">https://doi.org/10.1007/s10915-018-0729-3</a>, <a class="reference external" href="https://doi.org/10.1007/s10915-018-0729-3">doi:10.1007/s10915-018-0729-3</a>.</p>
+</dd>
+<dt class="label" id="id3"><span class="brackets">BN03a</span></dt>
+<dd><p>D. Bertaccini and M. K. Ng. Block ω-circulant preconditioners for the systems of differential equations. <em>Calcolo</em>, 40(2):71–90, 2003. URL: <a class="reference external" href="https://doi.org/10.1007/s100920300004">https://doi.org/10.1007/s100920300004</a>, <a class="reference external" href="https://doi.org/10.1007/s100920300004">doi:10.1007/s100920300004</a>.</p>
 </dd>
 <dt class="label" id="id10"><span class="brackets">BN01a</span></dt>
-<dd><p>Daniele Bertaccini and Michael K. Ng. Skew-circulant preconditioners for systems of LMF-based ODE codes. In <em>Numerical analysis and its applications (Rousse, 2000)</em>, volume 1988 of Lecture Notes in Comput. Sci., 93–101. Springer, Berlin, 2001. URL: <a class="reference external" href="https://doi.org/10.1007/3-540-45262-1_12">https://doi.org/10.1007/3-540-45262-1_12</a>, <a class="reference external" href="https://doi.org/10.1007/3-540-45262-1\_12">doi:10.1007/3-540-45262-1\_12</a>.</p>
+<dd><p>D. Bertaccini and Michael K. Ng. Skew-circulant preconditioners for systems of LMF-based ODE codes. In <em>Numerical analysis and its applications (Rousse, 2000)</em>, volume 1988 of Lecture Notes in Comput. Sci., 93–101. Springer, Berlin, 2001. URL: <a class="reference external" href="https://doi.org/10.1007/3-540-45262-1_12">https://doi.org/10.1007/3-540-45262-1_12</a>, <a class="reference external" href="https://doi.org/10.1007/3-540-45262-1\_12">doi:10.1007/3-540-45262-1\_12</a>.</p>
 </dd>
 <dt class="label" id="id4"><span class="brackets">BN01b</span></dt>
-<dd><p>Daniele Bertaccini and Michael K. Ng. The convergence rate of block preconditioned systems arising from LMF-based ODE codes. <em>BIT</em>, 41(3):433–450, 2001. URL: <a class="reference external" href="https://doi.org/10.1023/A:1021906926616">https://doi.org/10.1023/A:1021906926616</a>, <a class="reference external" href="https://doi.org/10.1023/A:1021906926616">doi:10.1023/A:1021906926616</a>.</p>
+<dd><p>D. Bertaccini and Michael K. Ng. The convergence rate of block preconditioned systems arising from LMF-based ODE codes. <em>BIT</em>, 41(3):433–450, 2001. URL: <a class="reference external" href="https://doi.org/10.1023/A:1021906926616">https://doi.org/10.1023/A:1021906926616</a>, <a class="reference external" href="https://doi.org/10.1023/A:1021906926616">doi:10.1023/A:1021906926616</a>.</p>
 </dd>
-<dt class="label" id="id5"><span class="brackets">BN03a</span></dt>
-<dd><p>Daniele Bertaccini and Michael K. Ng. Band-Toeplitz preconditioned GMRES iterations for time-dependent PDEs. <em>BIT</em>, 43(suppl.):901–914, 2003.</p>
-</dd>
-<dt class="label" id="id3"><span class="brackets">BN03b</span></dt>
-<dd><p>Daniele Bertaccini and Michael K. Ng. Block ω-circulant preconditioners for the systems of differential equations. <em>Calcolo</em>, 40(2):71–90, 2003. URL: <a class="reference external" href="https://doi.org/10.1007/s100920300004">https://doi.org/10.1007/s100920300004</a>, <a class="reference external" href="https://doi.org/10.1007/s100920300004">doi:10.1007/s100920300004</a>.</p>
+<dt class="label" id="id5"><span class="brackets">BN03b</span></dt>
+<dd><p>D. Bertaccini and Michael K. Ng. Band-Toeplitz preconditioned GMRES iterations for time-dependent PDEs. <em>BIT</em>, 43(suppl.):901–914, 2003.</p>
 </dd>
 </dl>
 </p>
