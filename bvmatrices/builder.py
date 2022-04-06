@@ -134,8 +134,7 @@ class bvmethod:
         u0mat = np.zeros((m,s+1))
         u0mat[0:m,0] = u0[0:m]
         u0mat = E*u0mat*self.A.transpose() - h*J*u0mat*self.B.transpose()
-        # rhs[0:m] = -u0mat[:,1]
-        # rhs[m+1:2*m+1] = -u0mat[:,2]
+
         if callable(g):
             for i in np.arange(1,s+1):
                 G[:,i] = g(t0 + i*h)
@@ -165,7 +164,7 @@ class bvmethod:
             y = y.reshape(m*s, order='F')
             return y
 
-        savemat("matprod.mat",{"A": A, "B": B, "E": E, "J": J, "G":G})
+        # savemat("matprod.mat",{"A": A, "B": B, "E": E, "J": J, "G":G})
 
         M = LinearOperator((m*s,m*s),matvec=mv,dtype=float)
         toc = time.perf_counter()
@@ -204,7 +203,6 @@ class bvmethod:
         return rhs.transpose()
 
 
-
     def buildprecond(self,J,T,t0,ptype,E=None):
         """ This function build the linear operator
         :math:`P= \operatorname{approx}(A) \otimes E - h\, \operatorname{approx}(B) \otimes J.`
@@ -240,7 +238,7 @@ class bvmethod:
             t[np.arange(0,self.nu+1,1)] = self.ro[np.arange(self.nu,-1,-1)]
             t[np.arange(s-self.k+self.nu,self.n,1)] = self.ro[np.arange(self.nu+1,self.k+1,1)]
             phi = np.fft.fft(t,axis=0)
-            phi[0] = 1
+            phi[0] = phi[s-1].real
             # Compute the ψ values
             t[np.arange(0,self.nu+1,1)] =  self.si[np.arange(self.nu,-1,-1)]
             t[np.arange(s-self.k+self.nu,self.n,1)] = self.si[np.arange(self.nu+1,self.k+1,1)]
