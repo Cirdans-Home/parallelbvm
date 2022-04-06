@@ -12,6 +12,9 @@ BUILDDIR      = docs
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
+deploy:
+	ghp-import -n -p -f docs/html
+
 .PHONY: help Makefile
 
 # Catch-all target: route all unknown targets to Sphinx using the new
