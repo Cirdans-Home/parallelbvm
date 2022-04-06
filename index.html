@@ -1,0 +1,283 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to bvmatrix’s documentation! &#8212; bvmatrix 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+      <div class="header" role="banner"><h1 class="heading"><a href="#">
+          <span>bvmatrix 1.0 documentation</span></a></h1>
+        <h2 class="heading"><span>Welcome to bvmatrix’s documentation!</span></h2>
+      </div>
+      <div class="topnav" role="navigation" aria-label="top navigation">
+      
+        <p>
+        <a class="uplink" href="#">Contents</a>
+        </p>
+
+      </div>
+      <div class="content" role="main">
+        
+        
+  <div class="section" id="welcome-to-bvmatrix-s-documentation">
+<h1>Welcome to bvmatrix’s documentation!<a class="headerlink" href="#welcome-to-bvmatrix-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>This libary is focused on the iterative solution of the linear system</p>
+<div class="math notranslate nohighlight">
+\[M\, \mathbf{y} = \mathbf{e}_1 \otimes \eta + h\,(B \otimes I) \mathbf{g},\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[ {\bf e}_1=(1,0,\ldots,0)^* \in \mathbb{R}^{s+1}, \quad
+\mathbf{y} = (\mathbf{y}_0,\ldots,\mathbf{y}_s)^*,
+\quad \mathbf{g}=(\mathbf{g}_0,\ldots,\mathbf{g}_s)^*,\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[M= A \otimes I - h\, B \otimes J.\]</div>
+<p>Coming from the discretization of</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{array}{ll}
+{\displaystyle
+\frac{{\rm d} {\bf y}(t)}{{\rm d}t}}=J {\bf y}(t)
++ {\bf g}(t), &amp; t \in (t_0, T],\\
+\\
+{\bf y}(t_0) = {\bf z}, &amp;  \\
+\end{array}\end{split}\]</div>
+<p>wiht <strong>Boundary Value Methods</strong>.</p>
+</div>
+<div class="section" id="library">
+<h1>Library<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h1>
+<p>To assemble the linear system the key routine is represented by the method
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">bvmatrices.builder.mab()</span></code> that builds the <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> matrices
+for the different BVM formulas. Then the function <code class="xref py py-meth docutils literal notranslate"><span class="pre">bvmatrices.builder.buildlinop()</span></code>
+produces the linear operator <span class="math notranslate nohighlight">\(M\)</span> to be used inside a Krylov method.</p>
+<span class="target" id="module-builder"></span><dl class="py class">
+<dt id="builder.bvmethod">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">builder.</span></code><code class="sig-name descname"><span class="pre">bvmethod</span></code><a class="headerlink" href="#builder.bvmethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class containing all the information for a given BVM</p>
+<dl class="py method">
+<dt id="builder.bvmethod.buildlinop">
+<code class="sig-name descname"><span class="pre">buildlinop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.buildlinop" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function build the linear operator
+<span class="math notranslate nohighlight">\(M= A \otimes E - h\, B \otimes J.\)</span> and the right-hand side for
+the liner system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>J</strong> – Jacobian of the system to integrate</p></li>
+<li><p><strong>T</strong> – Final time of integration</p></li>
+<li><p><strong>t0</strong> – Initial integration</p></li>
+<li><p><strong>g</strong> – Right-Hand side, could be either a vector or a function</p></li>
+<li><p><strong>u0</strong> – Initial condition</p></li>
+<li><p><strong>E</strong> (<em>optional</em>) – Mass matrix, default value is the identity matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return M</dt>
+<dd class="field-even"><p>LinearOperator implementing the matrix-vector product</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="builder.bvmethod.buildprecond">
+<code class="sig-name descname"><span class="pre">buildprecond</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ptype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.buildprecond" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function build the linear operator
+<span class="math notranslate nohighlight">\(P= \operatorname{approx}(A) \otimes E - h\, \operatorname{approx}(B) \otimes J.\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>J</strong> – Jacobian of the system to integrate</p></li>
+<li><p><strong>T</strong> – Final time of integration</p></li>
+<li><p><strong>t0</strong> – Initial integration</p></li>
+<li><p><strong>ptype</strong> – Type of structured preconditioner to build</p></li>
+<li><p><strong>E</strong> (<em>optional</em>) – Mass matrix, default value is the identity matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return P</dt>
+<dd class="field-even"><p>LinearOperator implementing the preconditioner</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="builder.bvmethod.buildrhs">
+<code class="sig-name descname"><span class="pre">buildrhs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.buildrhs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function bulds the right-hand side for the all-at-once system
+with the given BVM formula.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u0</strong> – Initial condition</p></li>
+<li><p><strong>g</strong> – source vector, it can be both a function of t or a constant
+vector</p></li>
+<li><p><strong>T</strong> – Final time of integration</p></li>
+<li><p><strong>t0</strong> – Initial integration</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return rhs</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="builder.bvmethod.info">
+<code class="sig-name descname"><span class="pre">info</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function prints out the information about the method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="builder.bvmethod.mab">
+<code class="sig-name descname"><span class="pre">mab</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.mab" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function creates the A and B matrices for the construction of
+the BVM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> – BVM formula “TOM”, “GBDF”, “GAM”</p></li>
+<li><p><strong>k</strong> – Degree of the formula</p></li>
+<li><p><strong>n</strong> – Number of time steps</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="builder.bvmethod.savetomatlab">
+<code class="sig-name descname"><span class="pre">savetomatlab</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#builder.bvmethod.savetomatlab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the building blocks of the method in MATLAB format</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="builder.rosi_gbdf">
+<code class="sig-prename descclassname"><span class="pre">builder.</span></code><code class="sig-name descname"><span class="pre">rosi_gbdf</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#builder.rosi_gbdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the ρ and σ polynomials for a generalized BDF formula with</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> – steps</p></li>
+<li><p><strong>j</strong> – initial conditions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return ro</dt>
+<dd class="field-even"><p>ρ polynomial</p>
+</dd>
+<dt class="field-odd">Return si</dt>
+<dd class="field-odd"><p>σ polynomial</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="section" id="utilities">
+<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
+<p>Some auxiliary routines are contained in the utilities module.</p>
+<span class="target" id="module-utilities"></span><dl class="py function">
+<dt id="utilities.dropcols_coo">
+<code class="sig-prename descclassname"><span class="pre">utilities.</span></code><code class="sig-name descname"><span class="pre">dropcols_coo</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx_to_drop</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.dropcols_coo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drops columns from matrices stored in COO format. Result is returned in
+CSR format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>C</strong> – Matrix in COO format.</p></li>
+<li><p><strong>idx_to_drop</strong> – List of columns to be dropped.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return C</dt>
+<dd class="field-even"><p>Matrix in CSR format with dropped columns.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utilities.vsolve">
+<code class="sig-prename descclassname"><span class="pre">utilities.</span></code><code class="sig-name descname"><span class="pre">vsolve</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utilities.vsolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function solves the Vandermonde linear system <span class="math notranslate nohighlight">\(W(x)f = b\)</span>.
+It is a service function needed to compute the ρ and σ polynomials.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – vector of the variables generating the Vandermonde system</p></li>
+<li><p><strong>b</strong> – right-hand side of the system</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return f</dt>
+<dd class="field-even"><p>solution of the linear system</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+<div class="section" id="bibliography">
+<h1>Bibliography<a class="headerlink" href="#bibliography" title="Permalink to this headline">¶</a></h1>
+<p>Preconditioners and material used in this library are discussed in detail in a
+number of papers:</p>
+<p id="id1"><dl class="citation">
+<dt class="label" id="id9"><span class="brackets">Ber99</span></dt>
+<dd><p>D. Bertaccini. <em>P–circulant preconditioners and the systems of the ODE codes</em>, pages 179–193. Volume 5 of IMACS series in computational and applied mathematics. IMACS, 1999.</p>
+</dd>
+<dt class="label" id="id6"><span class="brackets">Ber00</span></dt>
+<dd><p>D. Bertaccini. A circulant preconditioner for the systems of LMF-based ODE codes. <em>SIAM J. Sci. Comput.</em>, 22(3):767–786, 2000. URL: <a class="reference external" href="https://doi.org/10.1137/S1064827599353476">https://doi.org/10.1137/S1064827599353476</a>, <a class="reference external" href="https://doi.org/10.1137/S1064827599353476">doi:10.1137/S1064827599353476</a>.</p>
+</dd>
+<dt class="label" id="id7"><span class="brackets">Ber01</span></dt>
+<dd><p>D. Bertaccini. Reliable preconditioned iterative linear solvers for some numerical integrators. <em>Numer. Linear Algebra Appl.</em>, 8(2):111–125, 2001.</p>
+</dd>
+<dt class="label" id="id8"><span class="brackets">Ber02</span></dt>
+<dd><p>D. Bertaccini. The spectrum of circulant–like preconditioners for some general linear multistep formulas for linear boundary value problems. <em>SIAM J. Numer. Anal.</em>, 40(5):1798–1822, 2002.</p>
+</dd>
+<dt class="label" id="id2"><span class="brackets">BD18</span></dt>
+<dd><p>D. Bertaccini and F. Durastante. Limited memory block preconditioners for fast solution of fractional partial differential equations. <em>J. Sci. Comput.</em>, 77(2):950–970, 2018. URL: <a class="reference external" href="https://doi.org/10.1007/s10915-018-0729-3">https://doi.org/10.1007/s10915-018-0729-3</a>, <a class="reference external" href="https://doi.org/10.1007/s10915-018-0729-3">doi:10.1007/s10915-018-0729-3</a>.</p>
+</dd>
+<dt class="label" id="id3"><span class="brackets">BN03a</span></dt>
+<dd><p>D. Bertaccini and M. K. Ng. Block ω-circulant preconditioners for the systems of differential equations. <em>Calcolo</em>, 40(2):71–90, 2003. URL: <a class="reference external" href="https://doi.org/10.1007/s100920300004">https://doi.org/10.1007/s100920300004</a>, <a class="reference external" href="https://doi.org/10.1007/s100920300004">doi:10.1007/s100920300004</a>.</p>
+</dd>
+<dt class="label" id="id10"><span class="brackets">BN01a</span></dt>
+<dd><p>D. Bertaccini and Michael K. Ng. Skew-circulant preconditioners for systems of LMF-based ODE codes. In <em>Numerical analysis and its applications (Rousse, 2000)</em>, volume 1988 of Lecture Notes in Comput. Sci., 93–101. Springer, Berlin, 2001. URL: <a class="reference external" href="https://doi.org/10.1007/3-540-45262-1_12">https://doi.org/10.1007/3-540-45262-1_12</a>, <a class="reference external" href="https://doi.org/10.1007/3-540-45262-1\_12">doi:10.1007/3-540-45262-1\_12</a>.</p>
+</dd>
+<dt class="label" id="id4"><span class="brackets">BN01b</span></dt>
+<dd><p>D. Bertaccini and Michael K. Ng. The convergence rate of block preconditioned systems arising from LMF-based ODE codes. <em>BIT</em>, 41(3):433–450, 2001. URL: <a class="reference external" href="https://doi.org/10.1023/A:1021906926616">https://doi.org/10.1023/A:1021906926616</a>, <a class="reference external" href="https://doi.org/10.1023/A:1021906926616">doi:10.1023/A:1021906926616</a>.</p>
+</dd>
+<dt class="label" id="id5"><span class="brackets">BN03b</span></dt>
+<dd><p>D. Bertaccini and Michael K. Ng. Band-Toeplitz preconditioned GMRES iterations for time-dependent PDEs. <em>BIT</em>, 43(suppl.):901–914, 2003.</p>
+</dd>
+</dl>
+</p>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+      </div>
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      
+        <p>
+        <a class="uplink" href="#">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Fabio Durastante, Daniele Bertaccini.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>
